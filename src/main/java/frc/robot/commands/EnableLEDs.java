@@ -4,6 +4,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.MatrixLEDs;
+import frc.robot.subsystems.MatrixLEDs.LEDMode;
 import frc.robot.utility.BullLogger;
 
 public class EnableLEDs extends CommandBase {
@@ -32,14 +33,8 @@ public class EnableLEDs extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        // Fill the buffer with a single color
-//        m_LEDSystem.allOneColor(m_hue);
-        m_LEDSystem.oneRow(15, m_hue);
-//        Mat mat = Mat.eye(16, 16, CV_8U);
-//        Matrix<16, 16> mat = new Matrix(new Nat<16>, new Nat<16>);
-//        var mat = Matrix.mat(Nat.N16(), Nat.N16()).fill(2.0, 1.0, 0.0, 1.0);
-//        var mat = Matrix.eye(Nat.N16());
-//        m_LEDSystem.setMat(mat, m_hue);
+        // Set the mode to disabled.
+        m_LEDSystem.setMode(LEDMode.DISABLED);
 
         // Start the LEDs
         m_LEDSystem.start();
@@ -49,17 +44,12 @@ public class EnableLEDs extends CommandBase {
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
-    public void execute() {
-      if (m_hue == -1) {
-        // only for rainbow
-        m_LEDSystem.next();
-      }
-    }
+    public void execute() {}
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        m_LEDSystem.noColor();
+        m_LEDSystem.setMode(LEDMode.OFF);
         m_LEDSystem.stop();
 
         m_stringLogger.logEntry("EnableLEDs: end\n");

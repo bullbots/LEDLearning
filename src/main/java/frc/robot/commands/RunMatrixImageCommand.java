@@ -4,6 +4,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.numbers.N16;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.MatrixLEDs;
+import frc.robot.subsystems.MatrixLEDs.LEDMode;
 
 
 public class RunMatrixImageCommand extends CommandBase {
@@ -18,18 +19,19 @@ public class RunMatrixImageCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        matrixLEDs.setMat(matrixImage, 0);
+        matrixLEDs.setCustomMatrix(matrixImage, 0);
         matrixLEDs.start();
     }
 
     @Override
     public boolean isFinished() {
-        return false ;
+        return false;
     }
 
     @Override
     public void end(boolean interrupted) {
         super.end(interrupted);
         matrixLEDs.stop();
+        matrixLEDs.setMode(LEDMode.OFF);
     }
 }
