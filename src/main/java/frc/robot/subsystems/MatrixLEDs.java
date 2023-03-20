@@ -117,9 +117,9 @@ public class MatrixLEDs extends SubsystemBase {
         case DISABLED:
           methodConsumer.set(
             (leds) -> leds.alternate(2, () -> {
-              setAllOnce(leds, 60); // Green?
+              setAll(leds, 60);
             }, () -> {
-              setAllOnce(leds, 110); // Blue?
+              setAll(leds, 110);
             })
           );
           break;
@@ -145,6 +145,14 @@ public class MatrixLEDs extends SubsystemBase {
     leds.allOneColor(hue);
     led.setData(ledBuffer);
     methodConsumer.set(null);
+  }
+
+  /**
+   * Sets all the LEDs to the given color
+   */
+  private void setAll(LEDWrapperMethods leds, int hue) {
+    leds.allOneColor(hue);
+    led.setData(ledBuffer);
   }
 
   /**
@@ -306,9 +314,9 @@ public class MatrixLEDs extends SubsystemBase {
       // Diagonal rainbow
       for (int i = 0; i < numRows; i++) {
         // int hue = (rainbowFirstPixelHue + (i * 180 / ledBuffer.getLength())) % 180;
-        final int rowStartHue = (rainbowFirstPixelHue + (i * 180 / numRows)) % 180;
+        final int rowStartHue = (rainbowFirstPixelHue + (i * 180 / (2 * numRows))) % 180;
         for (int j = 0; j < numCols; j++) {
-          final int hue = (rowStartHue + (j * 180 / numCols)) % 180;
+          final int hue = (rowStartHue + (j * 180 / (2 * numCols))) % 180;
           ledBuffer.setHSV(oneDimensionalIndex(i, j), hue, 255, 128);
         }
       }
