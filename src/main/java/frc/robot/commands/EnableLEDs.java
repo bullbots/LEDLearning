@@ -4,6 +4,7 @@ import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.SetLEDs;
+import frc.robot.subsystems.SetLEDs.LEDMode;
 import frc.robot.utility.BullLogger;
 
 public class EnableLEDs extends CommandBase {
@@ -32,8 +33,8 @@ public class EnableLEDs extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        // Fill the buffer with a single color
-        m_LEDSystem.allOneColor(m_hue);
+        // Set the mode to disabled.
+        m_LEDSystem.setMode(LEDMode.DISABLED);
 
         // Start the LEDs
         m_LEDSystem.start();
@@ -43,17 +44,12 @@ public class EnableLEDs extends CommandBase {
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
-    public void execute() {
-      if (m_hue == -1) {
-        // only for rainbow
-        m_LEDSystem.next();
-      }
-    }
+    public void execute() {}
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        m_LEDSystem.noColor();
+        m_LEDSystem.setMode(LEDMode.OFF);
         m_LEDSystem.stop();
 
         m_stringLogger.logEntry("EnableLEDs: end\n");
