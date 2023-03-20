@@ -4,35 +4,39 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.EnableLEDs;
 import frc.robot.commands.Flash;
-import frc.robot.subsystems.SetLEDs;
+import frc.robot.commands.FlashRepeatCommand;
+import frc.robot.commands.RunMatrixImageCommand;
+import frc.robot.subsystems.MatrixLEDs;
+import frc.robot.utility.ImagesYamlLoader;
 
 public class Robot extends TimedRobot {
   // LED Commands
-  EnableLEDs m_LEDCommand;
-  Flash m_FlashGroup;
+  private final ImagesYamlLoader imagesLoader = new ImagesYamlLoader();
 
-  SetLEDs m_LEDSystem;
+  MatrixLEDs m_LEDSystem;
         
   DataLog m_MainLogger;
   
   @Override
   public void robotInit() {
     try {
-      m_LEDSystem = new SetLEDs();
-      m_LEDCommand = new EnableLEDs(m_LEDSystem, -1);
-      SmartDashboard.putData("LED Color", m_LEDCommand);
+      m_LEDSystem = new MatrixLEDs();
 
       // set up a command sequence
-      m_FlashGroup = new Flash(m_LEDSystem, 2.0);
-      SmartDashboard.putData("Flash LEDs", m_FlashGroup);
+      SmartDashboard.putData("Enable LEDs", new EnableLEDs(m_LEDSystem, 0));
+      SmartDashboard.putData("Flash LEDs", new Flash(m_LEDSystem, 0.25));
+      SmartDashboard.putData("Flash Repeated LEDs", new FlashRepeatCommand(4,0.25, m_LEDSystem));
+      SmartDashboard.putData("Run Row One", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("Row One")));
+      SmartDashboard.putData("Run Row Tw0", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("Row Two")));
+      SmartDashboard.putData("Run Eye", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("Eye")));
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();

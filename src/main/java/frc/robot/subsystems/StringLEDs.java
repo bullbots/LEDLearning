@@ -1,16 +1,12 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.util.datalog.IntegerLogEntry;
-import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utility.BullLogger;
 
 
-public class SetLEDs extends SubsystemBase {
+public class StringLEDs extends SubsystemBase {
   private AddressableLED m_led;
   private AddressableLEDBuffer m_ledBuffer;
 
@@ -20,9 +16,9 @@ public class SetLEDs extends SubsystemBase {
   // for rainbow pattern, store what the last hue of the first pixel is
   private int m_rainbowFirstPixelHue;
 
-  public SetLEDs() {
+  public StringLEDs() {
     // This should only be called once because of the port conflict issue
-    m_led = new AddressableLED(9); // PWM port 9
+    m_led = new AddressableLED(0); // PWM port 0
 
     // Reuse buffer
     // Default to a length of 20, start empty output
