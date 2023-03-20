@@ -23,8 +23,7 @@ public class MatrixLEDs extends SubsystemBase {
     DISABLED,
     CONE,
     CUBE,
-    RAINBOW,
-    CUSTOM
+    RAINBOW
   }
 
   private LEDMode currentMode = LEDMode.OFF;
@@ -41,7 +40,8 @@ public class MatrixLEDs extends SubsystemBase {
   private Timer timer = new Timer();
 
   // See https://github.com/STMARobotics/frc-7028-2023/blob/main/src/main/java/frc/robot/subsystems/LEDSubsystem.java
-  private final AtomicReference<Consumer<AddressableLEDBuffer>> bufferConsumer = new AtomicReference<Consumer<AddressableLEDBuffer>>(null);
+  private final LEDWrapperMethods ledMethods = new LEDWrapperMethods();
+  private final AtomicReference<Consumer<LEDWrapperMethods>> bufferConsumer = new AtomicReference<Consumer<LEDWrapperMethods>>(null);
   // This Notifier acts in place of periodic, so updating the buffer will happen on a seperate thread.
   private final Notifier periodicThread;
 
@@ -63,10 +63,10 @@ public class MatrixLEDs extends SubsystemBase {
     led.setLength(ledBuffer.getLength());
 
     periodicThread = new Notifier(() ->  {
-      Consumer<AddressableLEDBuffer> value = bufferConsumer.get();
+      Consumer<LEDWrapperMethods> value = bufferConsumer.get();
       if (value != null) {
         // Call the consumer to update the LEDs on this notifier thread
-        value.accept(ledBuffer);
+        value.accept(ledMethods);
       }
     });
     periodicThread.setName("LED Matrix");
@@ -91,7 +91,7 @@ public class MatrixLEDs extends SubsystemBase {
   }
 
   public void setCustomMatrix(Matrix<N16, N16> matrix, int hue) {
-    currentMode = LEDMode.CUSTOM;
+    currentMode = null;
     timer.stop();
     timer.reset();
     bufferConsumer.set((buffer) -> matrixConsumer(buffer, matrix, hue));
@@ -104,143 +104,82 @@ public class MatrixLEDs extends SubsystemBase {
       timer.reset();
       switch (currentMode) {
         case OFF:
-          bufferConsumer.set((buffer) -> off(buffer));
+          bufferConsumer.set((leds) -> off(leds));
+          break;
         case DISCONNECTED:
-          bufferConsumer.set((buffer) -> disconnected(buffer));
+          bufferConsumer.set((leds) -> disconnected(leds));
+          break;
         case DISABLED:
           bufferConsumer.set(
-            (buffer) -> alternate(2, () -> {
-              setAllOnce(buffer, 60); // Green?
+            (leds) -> leds.alternate(2, () -> {
+              setAllOnce(leds, 60); // Green?
             }, () -> {
-              setAllOnce(buffer, 110); // Blue?
+              setAllOnce(leds, 110); // Blue?
             })
           );
+          break;
         case CONE:
           // Not sure how hsv works tbh, everything I find online is in the range [0,360), not [0,180).
           // This is supposed to be yellow, I don't know if it will be.
-          bufferConsumer.set((buffer) -> setAllOnce(buffer, 30));
+          bufferConsumer.set((leds) -> setAllOnce(leds, 30));
+          break;
         case CUBE:
-          bufferConsumer.set((buffer) -> setAllOnce(buffer, 140)); // Purple?
+          bufferConsumer.set((leds) -> setAllOnce(leds, 140)); // Purple?
+          break;
         case RAINBOW:
-          bufferConsumer.set((buffer) -> rainbowConsumer(buffer));
-        case CUSTOM:
-          return;
+          bufferConsumer.set((leds) -> rainbowConsumer(leds));
+          break;
       }
     }
   }
 
-  private void setAllOnce(AddressableLEDBuffer buffer, int hue) {
-    allOneColor(buffer, hue);
-    led.setData(buffer);
+  private void setAllOnce(LEDWrapperMethods leds, int hue) {
+    leds.allOneColor(hue);
+    led.setData(ledBuffer);
     bufferConsumer.set(null);
   }
 
-  private void off(AddressableLEDBuffer buffer) {
-    noColor(buffer);
-    led.setData(buffer);
+  private void off(LEDWrapperMethods leds) {
+    leds.noColor();
+    led.setData(ledBuffer);
     bufferConsumer.set(null);
   }
 
-  private void disconnected(AddressableLEDBuffer buffer) {
+  private void disconnected(LEDWrapperMethods leds) {
     // TODO: Dino :)
-    allOneColor(buffer, 0);
+    leds.flash(1,
+      () -> leds.allOneColor(0)
+    );
+    led.setData(ledBuffer);
     bufferConsumer.set(null);
   }
 
-  private void rainbowConsumer(AddressableLEDBuffer buffer) {
-    rainbow(buffer);
-    led.setData(buffer);
+  private void rainbowConsumer(LEDWrapperMethods leds) {
+    leds.rainbow();
+    led.setData(ledBuffer);
     // We don't reset the bufferConsumer because the rainbow should keep updating.
   }
 
-  private void matrixConsumer(AddressableLEDBuffer buffer, Matrix<N16, N16> mat, int hue) {
-    setMat(buffer, mat, hue);
-    led.setData(buffer);
+  private void matrixConsumer(LEDWrapperMethods leds, Matrix<N16, N16> mat, int hue) {
+    leds.setMat(mat, hue);
+    led.setData(ledBuffer);
     bufferConsumer.set(null);
   }
 
+  public void start() {
+    // Set the data
+    led.setData(ledBuffer);
+    led.start();
+    periodicThread.startPeriodic(0.02);
+    System.out.printf("SetLEDs: Start\nCurrent Mode: %s\n", currentMode);
 
-
-
-  private void setMat(AddressableLEDBuffer buffer, Matrix<N16, N16> mat, int hue) {
-    System.out.printf("INFO: mat size: %d x %d%n", mat.getNumRows(), mat.getNumCols());
-    for (var i = 0; i < numRows; ++i) {
-      for (var j = 0; j < numCols; ++j) {
-        var val = (int) mat.get(i, j);
-
-        var curBufIndex = ((i % 2) == 0) ? i * numCols + j : (i + 1) * numCols - 1 - j;
-
-        // Set the value
-//        System.out.printf("INFO: row: %d, col: %d, val: %d%n", i, j, val);
-
-        if (val == 1) {
-          buffer.setHSV(curBufIndex, hue, 255, 128);
-        }
-        else {
-          buffer.setHSV(curBufIndex, 0, 0, 0);
-        }
-      }
-    }
+    stringLogger.logEntry("SetMatrixLEDs: Start\n", BullLogger.LogLevel.INFO);
   }
 
-  public void oneRow(int row, int hue) {
-    if (row >= numRows) {
-      intLogger.logEntry(String.format("SetMatrixLEDs row out of bounds: %d >= %d", row, numRows), BullLogger.LogLevel.WARNING);
-    }
-
-    for (var i = 0; i < numRows; ++i) {
-      var idxStart = i * numCols;
-      var idxStop = idxStart + numCols;
-
-      if (row != i) {
-        for (var j = idxStart; j < idxStop; ++j) {
-          ledBuffer.setRGB(j, 0, 0, 0);
-        }
-        continue;
-      }
-
-      // Set the value
-      for (var j = idxStart; j < idxStop; ++j) {
-        ledBuffer.setHSV(j, hue, 255, 128);
-      }
-    }
-  }
-
-  private void allOneColor(AddressableLEDBuffer buffer, int hue) {
-    // For every pixel
-    for (var i = 0; i < buffer.getLength(); i++) {
-      // Set the value
-      buffer.setHSV(i, hue, 255, 128);
-    }
-  }
-
-  private void noColor(AddressableLEDBuffer buffer) {
-    // For every pixel
-    for (var i = 0; i < buffer.getLength(); ++i) {
-      // Set the value
-      buffer.setHSV(i, 0, 0, 0);
-    }
-  }
-
-  private void rainbow(AddressableLEDBuffer buffer) {
-    // Diagonal rainbow
-    for (int i = 0; i < numRows; i++) {
-      // int hue = (rainbowFirstPixelHue + (i * 180 / buffer.getLength())) % 180;
-      final int rowStartHue = (rainbowFirstPixelHue + (i * 180 / numRows)) % 180;
-      for (int j = 0; j < numCols; j++) {
-        final int hue = (rowStartHue + (j * 180 / numCols)) % 180;
-        buffer.setHSV(i*numCols+j, hue, 255, 128);
-      }
-    }
-    // Increase by to make the rainbow "move"
-    rainbowFirstPixelHue += 3;
-    // Check bounds
-    rainbowFirstPixelHue %= 180;
-
-    // log the color
-    intLogger.logEntry(rainbowFirstPixelHue, BullLogger.LogLevel.DEBUG);
-
-    stringLogger.logEntry("Rainbow " + rainbowFirstPixelHue, BullLogger.LogLevel.INFO);
+  public void stop() {
+    led.stop();
+    periodicThread.stop();
+    stringLogger.logEntry("SetMatrixLEDs: Stop\n", BullLogger.LogLevel.INFO);
   }
 
   public static Matrix<N16, N16> oneRow(int rowNum) {
@@ -262,29 +201,100 @@ public class MatrixLEDs extends SubsystemBase {
     return Matrix.mat(Nat.N16(), Nat.N16()).fill(doubleArray);
   }
 
-  private void alternate(double intervalSeconds, Runnable a, Runnable b) {
-    timer.start(); // Make sure the timer is running
-    long currentTime = System.currentTimeMillis();
-    if ((currentTime % (int) (intervalSeconds * 2000)) < (int) (intervalSeconds * 1000)) {
-      a.run();
-    } else {
-      b.run();
+  private class LEDWrapperMethods {
+    public void setMat(Matrix<N16, N16> mat, int hue) {
+      System.out.printf("INFO: mat size: %d x %d%n", mat.getNumRows(), mat.getNumCols());
+      for (var i = 0; i < numRows; ++i) {
+        for (var j = 0; j < numCols; ++j) {
+          var val = (int) mat.get(i, j);
+  
+          var curBufIndex = ((i % 2) == 0) ? i * numCols + j : (i + 1) * numCols - 1 - j;
+  
+          // Set the value
+  //        System.out.printf("INFO: row: %d, col: %d, val: %d%n", i, j, val);
+  
+          if (val == 1) {
+            ledBuffer.setHSV(curBufIndex, hue, 255, 128);
+          }
+          else {
+            ledBuffer.setHSV(curBufIndex, 0, 0, 0);
+          }
+        }
+      }
     }
-  }
+  
+    public void oneRow(int row, int hue) {
+      if (row >= numRows) {
+        intLogger.logEntry(String.format("SetMatrixLEDs row out of bounds: %d >= %d", row, numRows), BullLogger.LogLevel.WARNING);
+      }
+  
+      for (var i = 0; i < numRows; ++i) {
+        var idxStart = i * numCols;
+        var idxStop = idxStart + numCols;
+  
+        if (row != i) {
+          for (var j = idxStart; j < idxStop; ++j) {
+            ledBuffer.setRGB(j, 0, 0, 0);
+          }
+          continue;
+        }
+  
+        // Set the value
+        for (var j = idxStart; j < idxStop; ++j) {
+          ledBuffer.setHSV(j, hue, 255, 128);
+        }
+      }
+    }
+  
+    public void allOneColor(int hue) {
+      // For every pixel
+      for (var i = 0; i < ledBuffer.getLength(); i++) {
+        // Set the value
+        ledBuffer.setHSV(i, hue, 255, 128);
+      }
+    }
+  
+    public void noColor() {
+      // For every pixel
+      for (var i = 0; i < ledBuffer.getLength(); ++i) {
+        // Set the value
+        ledBuffer.setHSV(i, 0, 0, 0);
+      }
+    }
+  
+    private void rainbow() {
+      // Diagonal rainbow
+      for (int i = 0; i < numRows; i++) {
+        // int hue = (rainbowFirstPixelHue + (i * 180 / ledBuffer.getLength())) % 180;
+        final int rowStartHue = (rainbowFirstPixelHue + (i * 180 / numRows)) % 180;
+        for (int j = 0; j < numCols; j++) {
+          final int hue = (rowStartHue + (j * 180 / numCols)) % 180;
+          ledBuffer.setHSV(i*numCols+j, hue, 255, 128);
+        }
+      }
+      // Increase by to make the rainbow "move"
+      rainbowFirstPixelHue += 3;
+      // Check bounds
+      rainbowFirstPixelHue %= 180;
+  
+      // log the color
+      intLogger.logEntry(rainbowFirstPixelHue, BullLogger.LogLevel.DEBUG);
+  
+      stringLogger.logEntry("Rainbow " + rainbowFirstPixelHue, BullLogger.LogLevel.INFO);
+    }
 
-  public void start() {
-    // Set the data
-    led.setData(ledBuffer);
-    led.start();
-    periodicThread.startPeriodic(0.02);
-    System.out.print("SetLEDs: Start\n");
-
-    stringLogger.logEntry("SetMatrixLEDs: Start\n", BullLogger.LogLevel.INFO);
-  }
-
-  public void stop() {
-    led.stop();
-    periodicThread.stop();
-    stringLogger.logEntry("SetMatrixLEDs: Stop\n", BullLogger.LogLevel.INFO);
+    public void flash(double intervalSeconds, Runnable runnable) {
+      alternate(intervalSeconds, runnable, () -> {noColor();});
+    }
+  
+    public void alternate(double intervalSeconds, Runnable a, Runnable b) {
+      timer.start(); // Make sure the timer is running
+      long currentTime = System.currentTimeMillis();
+      if ((currentTime % (int) (intervalSeconds * 2000)) < (int) (intervalSeconds * 1000)) {
+        a.run();
+      } else {
+        b.run();
+      }
+    }
   }
 }
