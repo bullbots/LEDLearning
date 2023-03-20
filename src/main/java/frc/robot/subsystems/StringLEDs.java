@@ -109,38 +109,33 @@ public class StringLEDs extends SubsystemBase {
     }
   }
 
-  private void setLEDs() {
-    m_led.setData(m_ledBuffer);
-  }
-
   private void setAllOnce(AddressableLEDBuffer buffer, int hue) {
     allOneColor(buffer, hue);
-    setLEDs();
+    m_led.setData(buffer);
     bufferConsumer.set(null);
   }
 
   private void off(AddressableLEDBuffer buffer) {
     noColor(buffer);
-    setLEDs();
+    m_led.setData(buffer);
     bufferConsumer.set(null);
   }
 
   private void disconnected(AddressableLEDBuffer buffer) {
-    // TODO: Dino :)
     allOneColor(buffer, 0);
     bufferConsumer.set(null);
   }
 
   private void rainbowConsumer(AddressableLEDBuffer buffer) {
     rainbow(buffer);
-    setLEDs();
+    m_led.setData(buffer);
   }
 
 
 
 
 
-  public void allOneColor(AddressableLEDBuffer buffer, int hue) {
+  private void allOneColor(AddressableLEDBuffer buffer, int hue) {
     // For every pixel
     for (var i = 0; i < buffer.getLength(); i++) {
       // Set the value
@@ -148,7 +143,7 @@ public class StringLEDs extends SubsystemBase {
     }
   }
 
-  public void noColor(AddressableLEDBuffer buffer) {
+  private void noColor(AddressableLEDBuffer buffer) {
     // For every pixel
     for (var i = 0; i < buffer.getLength(); i++) {
       // Set the value

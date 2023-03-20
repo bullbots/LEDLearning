@@ -4,7 +4,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.MatrixLEDs;
-import frc.robot.subsystems.StringLEDs.LEDMode;
+import frc.robot.subsystems.MatrixLEDs.LEDMode;
 import frc.robot.utility.BullLogger;
 
 public class EnableLEDs extends CommandBase {
