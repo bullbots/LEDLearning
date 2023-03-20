@@ -7,8 +7,6 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utility.BullLogger;
 
@@ -163,6 +161,7 @@ public class StringLEDs extends SubsystemBase {
     m_stringLogger.logEntry("SetLEDs: Stop\n", BullLogger.LogLevel.INFO);
   }
 
+  @SuppressWarnings("unused")
   private class LEDWrapperMethods {
     public void allOneColor(int hue) {
       // For every pixel
