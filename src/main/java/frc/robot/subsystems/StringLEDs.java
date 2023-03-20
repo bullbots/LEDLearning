@@ -7,11 +7,13 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utility.BullLogger;
 
 
-public class SetLEDs extends SubsystemBase {
+public class StringLEDs extends SubsystemBase {
   public enum LEDMode {
     OFF,
     DISCONNECTED,
@@ -22,7 +24,7 @@ public class SetLEDs extends SubsystemBase {
   }
 
   private LEDMode currentMode = LEDMode.OFF;
-
+  
   private AddressableLED m_led;
   private AddressableLEDBuffer m_ledBuffer;
 
@@ -39,9 +41,9 @@ public class SetLEDs extends SubsystemBase {
   // for rainbow pattern, store what the last hue of the first pixel is
   private int m_rainbowFirstPixelHue;
 
-  public SetLEDs() {
+  public StringLEDs() {
     // This should only be called once because of the port conflict issue
-    m_led = new AddressableLED(9); // PWM port 9
+    m_led = new AddressableLED(0); // PWM port 0
 
     // Reuse buffer
     // Default to a length of 20, start empty output
@@ -56,7 +58,7 @@ public class SetLEDs extends SubsystemBase {
         value.accept(m_ledBuffer);
       }
     });
-    periodicThread.setName("LEDs");
+    periodicThread.setName("LED String");
   
     try {
       // set up a string logger

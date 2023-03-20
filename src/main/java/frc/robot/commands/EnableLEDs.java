@@ -1,19 +1,19 @@
 package frc.robot.commands;
 
-import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.util.datalog.StringLogEntry;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.SetLEDs;
-import frc.robot.subsystems.SetLEDs.LEDMode;
+import frc.robot.subsystems.MatrixLEDs;
+import frc.robot.subsystems.StringLEDs.LEDMode;
 import frc.robot.utility.BullLogger;
 
 public class EnableLEDs extends CommandBase {
-    SetLEDs m_LEDSystem;
+    MatrixLEDs m_LEDSystem;
     int m_hue;
 
     BullLogger m_stringLogger;
 
-    public EnableLEDs(SetLEDs aLEDSystem, int hue) {
+    public EnableLEDs(MatrixLEDs aLEDSystem, int hue) {
         this.m_LEDSystem = aLEDSystem;
         this.m_hue = hue;
         addRequirements(aLEDSystem);
