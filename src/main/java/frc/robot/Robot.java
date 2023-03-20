@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.EnableLEDs;
 import frc.robot.commands.Flash;
 import frc.robot.commands.FlashRepeatCommand;
+import frc.robot.commands.LEDDefaultCommand;
 import frc.robot.commands.RunMatrixImageCommand;
 import frc.robot.subsystems.MatrixLEDs;
 import frc.robot.utility.ImagesYamlLoader;
@@ -29,6 +30,8 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     try {
       m_LEDSystem = new MatrixLEDs();
+
+      m_LEDSystem.setDefaultCommand(new LEDDefaultCommand(m_LEDSystem));
 
       // set up a command sequence
       SmartDashboard.putData("Enable LEDs", new EnableLEDs(m_LEDSystem, 0));
