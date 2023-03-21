@@ -32,43 +32,15 @@
       "/SmartDashboard/Flash LEDs": "Command",
       "/SmartDashboard/Flash Repeated LEDs": "Command",
       "/SmartDashboard/LED Color": "Command",
+      "/SmartDashboard/Offline": "Command",
       "/SmartDashboard/Run Eye": "Command",
       "/SmartDashboard/Run One Row": "Command",
       "/SmartDashboard/Run Row One": "Command",
-      "/SmartDashboard/Run Row Tw0": "Command"
+      "/SmartDashboard/Run Row Tw0": "Command",
+      "/SmartDashboard/Traffic Cone": "Command"
     },
     "windows": {
-      "/SmartDashboard/Enable LEDs": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Flash LEDs": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Flash Repeated LEDs": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/LED Color": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Run Eye": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Run Row One": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Run Row Tw0": {
+      "/SmartDashboard/Traffic Cone": {
         "window": {
           "visible": true
         }

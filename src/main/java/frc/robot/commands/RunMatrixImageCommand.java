@@ -4,13 +4,14 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.numbers.N16;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.MatrixLEDs;
+import org.opencv.core.Mat;
 
 
 public class RunMatrixImageCommand extends CommandBase {
     private final MatrixLEDs matrixLEDs;
-    private final Matrix<N16, N16> matrixImage;
+    private final Mat matrixImage;
 
-    public RunMatrixImageCommand(MatrixLEDs matrixLEDs, Matrix<N16, N16> matrixImage) {
+    public RunMatrixImageCommand(MatrixLEDs matrixLEDs, Mat matrixImage) {
         this.matrixLEDs = matrixLEDs;
         this.matrixImage = matrixImage;
         addRequirements(this.matrixLEDs);
@@ -18,7 +19,7 @@ public class RunMatrixImageCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        matrixLEDs.setMat(matrixImage, 0);
+        matrixLEDs.setMat(matrixImage);
         matrixLEDs.start();
     }
 

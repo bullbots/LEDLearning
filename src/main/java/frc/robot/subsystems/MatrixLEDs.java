@@ -7,6 +7,9 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utility.BullLogger;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.Scalar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +18,8 @@ import java.util.List;
 public class MatrixLEDs extends SubsystemBase {
   private final AddressableLED led;
   private final AddressableLEDBuffer ledBuffer;
-  private final int numRows = 16;
-  private final int numCols = 16;
+  private static final int numRows = 16;
+  private static final int numCols = 16;
 
   private BullLogger stringLogger;
   private BullLogger intLogger;
@@ -57,23 +60,17 @@ public class MatrixLEDs extends SubsystemBase {
     }
   }
 
-  public void setMat(Matrix<N16, N16> mat, int hue) {
-    System.out.printf("INFO: mat size: %d x %d%n", mat.getNumRows(), mat.getNumCols());
+  public void setMat(Mat mat) {
     for (var i = 0; i < numRows; ++i) {
       for (var j = 0; j < numCols; ++j) {
-        var val = (int) mat.get(i, j);
+        double[] element = mat.get(i, j);
 
         var curBufIndex = ((i % 2) == 0) ? i * numCols + j : (i + 1) * numCols - 1 - j;
 
         // Set the value
 //        System.out.printf("INFO: row: %d, col: %d, val: %d%n", i, j, val);
 
-        if (val == 1) {
-          ledBuffer.setHSV(curBufIndex, hue, 255, 128);
-        }
-        else {
-          ledBuffer.setHSV(curBufIndex, 0, 0, 0);
-        }
+        ledBuffer.setRGB(curBufIndex, (int) element[2], (int) element[1], (int) element[0]);
       }
     }
   }
@@ -137,23 +134,40 @@ public class MatrixLEDs extends SubsystemBase {
     stringLogger.logEntry("Rainbow " + rainbowFirstPixelHue, BullLogger.LogLevel.INFO);
   }
 
-  public static Matrix<N16, N16> oneRow(int rowNum) {
-    List<Double> repeatingList = new ArrayList<>(16);
+  public static Mat oneRow(int rowNum) {
+    // Create a 16x16 Mat with type CV_8UC3 and set it to black (default)
+    Mat mat = new Mat(16, 16, CvType.CV_8UC3, new Scalar(0, 0, 0));
 
-    for (int i = 0; i < 16 * rowNum; i++) {
-      repeatingList.add(0.0);
-    }
+    // Create a Scalar object with the white color value (255, 255, 255)
+    Scalar whiteColor = new Scalar(255, 255, 255);
 
-    for (int i = 0; i < 16; i++) {
-      repeatingList.add(1.0);
-    }
+    // Create a submat for the desired row
+    Mat rowMat = mat.row(rowNum);
 
-    for (int i = 0; i < 16 * (16 - rowNum) - 16; i++) {
-      repeatingList.add(0.0);
-    }
+    // Set the rowMat to white using the setTo() method
+    rowMat.setTo(whiteColor);
 
-    double[] doubleArray = repeatingList.stream().mapToDouble(Double::doubleValue).toArray();
-    return Matrix.mat(Nat.N16(), Nat.N16()).fill(doubleArray);
+    return mat;
+  }
+
+  public static Mat oneCol(int rowNum) {
+    // Create a 16x16 Mat with type CV_8UC3 and set it to black (default)
+    Mat mat = new Mat(16, 16, CvType.CV_8UC3, new Scalar(0, 0, 0));
+
+    // Create a Scalar object with the white color value (255, 255, 255)
+    Scalar whiteColor = new Scalar(255, 255, 255);
+
+    // Create a submat for the desired column
+    Mat colMat = mat.col(rowNum);
+
+    // Set the rowMat to white using the setTo() method
+    colMat.setTo(whiteColor);
+
+    return mat;
+  }
+
+  public static Mat eye() {
+    return Mat.eye(numRows, numCols, CvType.CV_8UC3);
   }
 
   public void start() {

@@ -85,7 +85,6 @@ public class StringLEDs extends SubsystemBase {
     // Set the data
     m_led.setData(m_ledBuffer);
     m_led.start();
-    System.out.print("SetLEDs: Start\n");
 
     m_stringLogger.logEntry("SetLEDs: Start\n", BullLogger.LogLevel.INFO);
   }
