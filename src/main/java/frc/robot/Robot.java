@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -14,6 +12,7 @@ import frc.robot.commands.EnableLEDs;
 import frc.robot.commands.Flash;
 import frc.robot.commands.FlashRepeatCommand;
 import frc.robot.commands.LEDDefaultCommand;
+import frc.robot.commands.Rainbow;
 import frc.robot.commands.RunMatrixImageCommand;
 import frc.robot.subsystems.MatrixLEDs;
 import frc.robot.utility.ImagesYamlLoader;
@@ -40,6 +39,7 @@ public class Robot extends TimedRobot {
       SmartDashboard.putData("Run Row One", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("Row One")));
       SmartDashboard.putData("Run Row Tw0", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("Row Two")));
       SmartDashboard.putData("Run Eye", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("Eye")));
+      SmartDashboard.putData("Rainbow", new Rainbow(m_LEDSystem));
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();

@@ -32,6 +32,7 @@
       "/SmartDashboard/Flash LEDs": "Command",
       "/SmartDashboard/Flash Repeated LEDs": "Command",
       "/SmartDashboard/LED Color": "Command",
+      "/SmartDashboard/Rainbow": "Command",
       "/SmartDashboard/Run Eye": "Command",
       "/SmartDashboard/Run One Row": "Command",
       "/SmartDashboard/Run Row One": "Command",
@@ -54,6 +55,11 @@
         }
       },
       "/SmartDashboard/LED Color": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Rainbow": {
         "window": {
           "visible": true
         }
