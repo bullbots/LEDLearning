@@ -37,19 +37,27 @@ public class Robot extends TimedRobot {
       SmartDashboard.putData("Run Col Two", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("Col Two")));
       SmartDashboard.putData("Run Eye", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("Eye")));
       SmartDashboard.putData("Traffic Cone", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("traffic-cone-512")));
+      SmartDashboard.putData("Purple Cube", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("purple-3d-cube-hi")));
+      SmartDashboard.putData("Pickle", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("pickle"))); // Pickle doesn't exist so return sad face.
 
       SmartDashboard.putData("Offline Continuous",
               new RunMatrixVideoCommand(m_LEDSystem,
-                      videoLoader.get("Offline"),
+                      videoLoader.get("offline"),
                       10,
                       RunMatrixVideoCommand.RunType.CONTINUOUS
                       ));
       SmartDashboard.putData("Offline Once",
               new RunMatrixVideoCommand(m_LEDSystem,
-                      videoLoader.get("Offline"),
+                      videoLoader.get("offline"),
                       50,
                       RunMatrixVideoCommand.RunType.ONCE
               ));
+      // Pickle Video doesn't exist so return sad face.
+      SmartDashboard.putData("Pickle Video",
+              new RunMatrixVideoCommand(m_LEDSystem,
+                      videoLoader.get("pickle"),
+                      50,
+                      RunMatrixVideoCommand.RunType.ONCE));
     } catch (Exception e) {
       e.printStackTrace();
     }

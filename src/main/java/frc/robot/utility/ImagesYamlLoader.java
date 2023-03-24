@@ -11,10 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import frc.robot.subsystems.MatrixLEDs;
 
@@ -23,7 +20,10 @@ public class ImagesYamlLoader extends HashMap<String, Mat> {
 
     static { System.loadLibrary(Core.NATIVE_LIBRARY_NAME); }
 
-    private static final String imagesFilename = "traffic-cone-512.yaml";
+    private static final List<String> imagesFilenames = List.of(
+            "sad-face-frown.yaml",
+            "traffic-cone-512.yaml",
+            "purple-3d-cube-hi.yaml");
 
     public ImagesYamlLoader() {
         super();
@@ -33,7 +33,7 @@ public class ImagesYamlLoader extends HashMap<String, Mat> {
         this.put("Col Two", MatrixLEDs.oneCol(1));
         this.put("Eye", MatrixLEDs.eye());
 
-        loadYamlFile();
+        loadYamlFiles();
     }
 
     @Override
@@ -45,7 +45,11 @@ public class ImagesYamlLoader extends HashMap<String, Mat> {
     @Override
     public Mat get(Object key) {
         System.out.println("INFO: ImagesYamlLoader get");
-        return super.get(key);
+
+        if (this.containsKey(key)) {
+            return super.get(key);
+        }
+        return super.get("sad-face-frown");
     }
 
     private Path getDeployPath() {
@@ -58,37 +62,38 @@ public class ImagesYamlLoader extends HashMap<String, Mat> {
         }
     }
 
-    private void loadYamlFile() {
+    private void loadYamlFiles() {
         Path deployFolderPath = getDeployPath();
 
-        Path imagePath = deployFolderPath.resolve(imagesFilename);
-
-        Yaml yaml = new Yaml();
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(imagePath.toFile());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-        Map<String, Object> imageData = yaml.load(inputStream);
-
-        String imageName = (String) imageData.get("image_name");
-
-        List<List<List<Integer>>> frameArray = (List<List<List<Integer>>>) imageData.get("frame");
-        int rows = frameArray.size();
-        int cols = frameArray.get(0).size();
-        Mat frame = new Mat(rows, cols, CvType.CV_8UC3);
-
-        for (int row = 0; row < rows; row++) {
-            for (int col = 0; col < cols; col++) {
-                List<Integer> pixel = frameArray.get(row).get(col);
-                double[] pixelData = {pixel.get(0), pixel.get(1), pixel.get(2)};
-                frame.put(row, col, pixelData);
+        for (var imagesFilename: imagesFilenames) {
+            Path imagePath = deployFolderPath.resolve(imagesFilename);
+            Yaml yaml = new Yaml();
+            InputStream inputStream = null;
+            try {
+                inputStream = new FileInputStream(imagePath.toFile());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                System.exit(1);
             }
-        }
+            Map<String, Object> imageData = yaml.load(inputStream);
 
-        System.out.printf("INFO: loading: \"%s\"%n", imageName);
-        this.put(imageName, frame);
+            String imageName = (String) imageData.get("image_name");
+
+            List<List<List<Integer>>> frameArray = (List<List<List<Integer>>>) imageData.get("frame");
+            int rows = frameArray.size();
+            int cols = frameArray.get(0).size();
+            Mat frame = new Mat(rows, cols, CvType.CV_8UC3);
+
+            for (int row = 0; row < rows; row++) {
+                for (int col = 0; col < cols; col++) {
+                    List<Integer> pixel = frameArray.get(row).get(col);
+                    double[] pixelData = {pixel.get(0), pixel.get(1), pixel.get(2)};
+                    frame.put(row, col, pixelData);
+                }
+            }
+
+            System.out.printf("INFO: loading: \"%s\"%n", imageName);
+            this.put(imageName, frame);
+        }
     }
 }

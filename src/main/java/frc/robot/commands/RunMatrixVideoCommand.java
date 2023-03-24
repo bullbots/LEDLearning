@@ -34,6 +34,10 @@ public class RunMatrixVideoCommand extends CommandBase {
 
     @Override
     public void initialize() {
+        curIdx = 0;
+        prevIdx = 0;
+        curCycle = 0;
+        isFinished = false;
         matrixLEDs.setMat(matrixImages.get(0));
         matrixLEDs.start();
     }

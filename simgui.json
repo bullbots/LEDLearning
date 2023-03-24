@@ -9,6 +9,11 @@
         "visible": true
       }
     },
+    "Other Devices": {
+      "window": {
+        "visible": false
+      }
+    },
     "RoboRIO": {
       "3.3V Rail": {
         "open": true
@@ -33,14 +38,42 @@
       "/SmartDashboard/Flash Repeated LEDs": "Command",
       "/SmartDashboard/LED Color": "Command",
       "/SmartDashboard/Offline": "Command",
+      "/SmartDashboard/Offline Continuous": "Command",
+      "/SmartDashboard/Offline Once": "Command",
+      "/SmartDashboard/Pickle": "Command",
+      "/SmartDashboard/Pickle Video": "Command",
+      "/SmartDashboard/Purple Cube": "Command",
+      "/SmartDashboard/Run Col One": "Command",
+      "/SmartDashboard/Run Col Two": "Command",
       "/SmartDashboard/Run Eye": "Command",
       "/SmartDashboard/Run One Row": "Command",
       "/SmartDashboard/Run Row One": "Command",
       "/SmartDashboard/Run Row Tw0": "Command",
+      "/SmartDashboard/Run Row Two": "Command",
       "/SmartDashboard/Traffic Cone": "Command"
     },
     "windows": {
-      "/SmartDashboard/Traffic Cone": {
+      "/SmartDashboard/Offline Continuous": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Offline Once": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Pickle": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Pickle Video": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Purple Cube": {
         "window": {
           "visible": true
         }
@@ -67,5 +100,8 @@
       },
       "open": true
     }
+  },
+  "NetworkTables View": {
+    "visible": false
   }
 }
