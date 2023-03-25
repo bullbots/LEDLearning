@@ -12,11 +12,11 @@ import frc.robot.commands.EnableLEDs;
 import frc.robot.commands.Flash;
 import frc.robot.commands.FlashRepeatCommand;
 import frc.robot.commands.LEDDefaultCommand;
-import frc.robot.commands.Rainbow;
 import frc.robot.commands.RunMatrixImageCommand;
 import frc.robot.commands.*;
 import frc.robot.subsystems.MatrixLEDs;
 import frc.robot.utility.YamlLoader;
+import frc.robot.utility.MatrixVideo.RunType;
 
 public class Robot extends TimedRobot {
   // LED Commands
@@ -49,20 +49,20 @@ public class Robot extends TimedRobot {
               new RunMatrixVideoCommand(m_LEDSystem,
                       YamlLoader.getVideo("offline"),
                       10,
-                      RunMatrixVideoCommand.RunType.CONTINUOUS
+                      RunType.LOOP
                       ));
       SmartDashboard.putData("Offline Once",
               new RunMatrixVideoCommand(m_LEDSystem,
                       YamlLoader.getVideo("offline"),
                       50,
-                      RunMatrixVideoCommand.RunType.ONCE
+                      RunType.ONCE
               ));
       // Pickle Video doesn't exist so return sad face.
       SmartDashboard.putData("Pickle Video",
               new RunMatrixVideoCommand(m_LEDSystem,
                       YamlLoader.getVideo("pickle"),
                       50,
-                      RunMatrixVideoCommand.RunType.ONCE));
+                      RunType.ONCE));
     } catch (Exception e) {
       e.printStackTrace();
     }

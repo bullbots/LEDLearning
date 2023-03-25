@@ -31,7 +31,6 @@ public class YamlLoader {
 
     static {
         File[] files = Paths.get(Filesystem.getDeployDirectory().toString(), "").toFile().listFiles();
-        ArrayList<String> f = new ArrayList<>();
         for (File file : files) {
             if (file.getName().endsWith(".yaml")) {
                 filenames.add(file.getName());

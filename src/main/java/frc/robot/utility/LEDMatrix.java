@@ -4,13 +4,13 @@
 
 package frc.robot.utility;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Num;
+import org.opencv.core.Mat;
+
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
 
-public class LEDMatrix<Rows extends Num, Cols extends Num> {
+public class LEDMatrix {
     private final AddressableLED leds;
     private final AddressableLEDBuffer buffer;
     private final int numRows, numCols;
@@ -50,20 +50,20 @@ public class LEDMatrix<Rows extends Num, Cols extends Num> {
         return ((x % 2) == 0) ? x * numCols + y : (x + 1) * numCols - 1 - y;
     }
 
-    public void setMatrix(Matrix<Rows, Cols> mat, int hue) {
-        setMatrix(mat, hue, true);
+    public void setMatrix(Mat mat) {
+        setMatrix(mat, true);
     }
 
-    public void setMatrix(Matrix<Rows, Cols> mat, int hue, boolean clearOthers) {
+    public void setMatrix(Mat mat, boolean clearOthers) {
         for (var i = 0; i < numRows; ++i) {
             for (var j = 0; j < numCols; ++j) {
-                var val = (int) mat.get(i, j);
+                double[] element = mat.get(i, j);
                 var curBufIndex = oneDimensionalIndex(i, j);
 
-                if (val == 0 && clearOthers) {
-                    buffer.setHSV(curBufIndex, 0, 0, 0);
+                if (clearOthers && element[0] == 0 && element[1] == 0 && element[2] == 0) {
+                    buffer.setRGB(curBufIndex, 0, 0, 0);
                 } else {
-                    buffer.setHSV(curBufIndex, hue, 255, 128);
+                    buffer.setRGB(curBufIndex, (int) element[2], (int) element[1], (int) element[0]);
                 }
             }
         }

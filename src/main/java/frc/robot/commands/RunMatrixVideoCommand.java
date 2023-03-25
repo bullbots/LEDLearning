@@ -2,6 +2,9 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.MatrixLEDs;
+import frc.robot.utility.MatrixVideo;
+import frc.robot.utility.MatrixVideo.RunType;
+
 import org.opencv.core.Mat;
 
 import java.util.List;
@@ -9,68 +12,34 @@ import java.util.List;
 
 public class RunMatrixVideoCommand extends CommandBase {
     private final MatrixLEDs matrixLEDs;
-    private final List<Mat> matrixImages;
-    private int robotCyclesPerFrame = 0;
-    private int curIdx = 0;
-    private int prevIdx = 0;
-    private int curCycle = 0;
-    private boolean isFinished = false;
 
-    public enum RunType {
-        ONCE,
-        CONTINUOUS
-    }
-
-    private RunType runType;
-
+    private final MatrixVideo video;
+    private Mat lastFrame;
 
     public RunMatrixVideoCommand(MatrixLEDs matrixLEDs, List<Mat> matrixImages, int robotCyclesPerFrame, RunType runType) {
         this.matrixLEDs = matrixLEDs;
-        this.matrixImages = matrixImages;
-        this.robotCyclesPerFrame = robotCyclesPerFrame;
-        this.runType = runType;
+        this.video = new MatrixVideo(matrixImages, robotCyclesPerFrame, runType);
         addRequirements(this.matrixLEDs);
     }
 
     @Override
     public void initialize() {
-        curIdx = 0;
-        prevIdx = 0;
-        curCycle = 0;
-        isFinished = false;
-        matrixLEDs.setMat(matrixImages.get(0));
+        video.restart();
         matrixLEDs.start();
     }
 
     @Override
     public void execute() {
-        curCycle++;
-        if (curCycle % robotCyclesPerFrame == 0) {
-            curIdx++;
-            curCycle = 0;
+        Mat frame = video.update();
+        if (!frame.equals(lastFrame)) {
+            matrixLEDs.setCustomMatrix(frame);
         }
-
-        if (curIdx >= matrixImages.size() && runType == RunType.ONCE) {
-            isFinished = true;
-        } else if (curIdx >= matrixImages.size()) {
-            System.out.println("INFO: restarting video");
-            curIdx = 0;
-        }
-
-        if (!isFinished && curIdx != prevIdx) {
-            matrixLEDs.setMat(matrixImages.get(curIdx));
-            matrixLEDs.start();
-        }
-        prevIdx = curIdx;
+        lastFrame = frame;
     }
 
     @Override
     public boolean isFinished() {
-        if (runType == RunType.CONTINUOUS) {
-            return false;
-        }
-
-        return isFinished;
+        return video.isFinished();
     }
 
     @Override
