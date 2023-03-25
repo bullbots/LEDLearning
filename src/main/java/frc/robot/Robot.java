@@ -14,12 +14,12 @@ import frc.robot.commands.FlashRepeatCommand;
 import frc.robot.commands.LEDDefaultCommand;
 import frc.robot.commands.Rainbow;
 import frc.robot.commands.RunMatrixImageCommand;
+import frc.robot.commands.*;
 import frc.robot.subsystems.MatrixLEDs;
-import frc.robot.utility.ImagesYamlLoader;
+import frc.robot.utility.YamlLoader;
 
 public class Robot extends TimedRobot {
   // LED Commands
-  private final ImagesYamlLoader imagesLoader = new ImagesYamlLoader();
 
   MatrixLEDs m_LEDSystem;
         
@@ -36,12 +36,34 @@ public class Robot extends TimedRobot {
       SmartDashboard.putData("Enable LEDs", new EnableLEDs(m_LEDSystem, 0));
       SmartDashboard.putData("Flash LEDs", new Flash(m_LEDSystem, 0.25));
       SmartDashboard.putData("Flash Repeated LEDs", new FlashRepeatCommand(4,0.25, m_LEDSystem));
-      SmartDashboard.putData("Run Row One", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("Row One")));
-      SmartDashboard.putData("Run Row Tw0", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("Row Two")));
-      SmartDashboard.putData("Run Eye", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("Eye")));
-      SmartDashboard.putData("Rainbow", new Rainbow(m_LEDSystem));
+      SmartDashboard.putData("Run Row One", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Row One")));
+      SmartDashboard.putData("Run Row Two", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Row Two")));
+      SmartDashboard.putData("Run Col One", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Col One")));
+      SmartDashboard.putData("Run Col Two", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Col Two")));
+      SmartDashboard.putData("Run Eye", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Eye")));
+      SmartDashboard.putData("Traffic Cone", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("cone256")));
+      SmartDashboard.putData("Purple Cube", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("cube256")));
+      SmartDashboard.putData("Pickle", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("pickle"))); // Pickle doesn't exist so return sad face.
+
+      SmartDashboard.putData("Offline Continuous",
+              new RunMatrixVideoCommand(m_LEDSystem,
+                      YamlLoader.getVideo("offline"),
+                      10,
+                      RunMatrixVideoCommand.RunType.CONTINUOUS
+                      ));
+      SmartDashboard.putData("Offline Once",
+              new RunMatrixVideoCommand(m_LEDSystem,
+                      YamlLoader.getVideo("offline"),
+                      50,
+                      RunMatrixVideoCommand.RunType.ONCE
+              ));
+      // Pickle Video doesn't exist so return sad face.
+      SmartDashboard.putData("Pickle Video",
+              new RunMatrixVideoCommand(m_LEDSystem,
+                      YamlLoader.getVideo("pickle"),
+                      50,
+                      RunMatrixVideoCommand.RunType.ONCE));
     } catch (Exception e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
