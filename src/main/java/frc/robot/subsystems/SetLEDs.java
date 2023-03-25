@@ -1,11 +1,7 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.util.datalog.IntegerLogEntry;
-import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utility.BullLogger;
 
@@ -14,8 +10,7 @@ public class SetLEDs extends SubsystemBase {
   private AddressableLED m_led;
   private AddressableLEDBuffer m_ledBuffer;
 
-  private BullLogger m_stringLogger;
-  private BullLogger m_intLogger;
+  private BullLogger m_Logger;
 
   // for rainbow pattern, store what the last hue of the first pixel is
   private int m_rainbowFirstPixelHue;
@@ -31,18 +26,8 @@ public class SetLEDs extends SubsystemBase {
     m_led.setLength(m_ledBuffer.getLength());
 
     try {
-      // set up a string logger
-      m_stringLogger = new BullLogger("stringSetLEDs", true, false);
-
-      m_stringLogger.setLogType(BullLogger.LogType.STRING);
-      m_stringLogger.setLogLevel(BullLogger.LogLevel.DEBUG);
-
-      // set up an int logger
-      m_intLogger = new BullLogger("intSetLEDs", true, true);
-
-      m_intLogger.setLogType(BullLogger.LogType.INT);
-
-      m_intLogger.setLogLevel(BullLogger.LogLevel.DEBUG);
+      // set up the logger
+      m_Logger = new BullLogger(true, false, BullLogger.LogLevel.DEBUG);
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -80,9 +65,9 @@ public class SetLEDs extends SubsystemBase {
     m_rainbowFirstPixelHue %= 180;
 
     // log the color
-    m_intLogger.logEntry(m_rainbowFirstPixelHue, BullLogger.LogLevel.DEBUG);
+//    m_Logger.putInteger("FirstPixelHue", m_rainbowFirstPixelHue, BullLogger.LogLevel.DEBUG);
 
-    m_stringLogger.logEntry("Rainbow " + m_rainbowFirstPixelHue, BullLogger.LogLevel.INFO);
+//    m_Logger.putString("Rainbow", "Rainbow " + m_rainbowFirstPixelHue, BullLogger.LogLevel.INFO);
   }
 
   public void start() {
@@ -91,7 +76,7 @@ public class SetLEDs extends SubsystemBase {
     m_led.start();
     System.out.print("SetLEDs: Start\n");
 
-    m_stringLogger.logEntry("SetLEDs: Start\n", BullLogger.LogLevel.INFO);
+    m_Logger.putString("SetLEDs", "SetLEDs: Start\n", BullLogger.LogLevel.INFO);
   }
 
   public void next() {
@@ -103,6 +88,6 @@ public class SetLEDs extends SubsystemBase {
 
   public void stop() {
     m_led.stop();
-    m_stringLogger.logEntry("SetLEDs: Stop\n", BullLogger.LogLevel.INFO);
+    m_Logger.putString("SetLEDs", "SetLEDs: Stop\n", BullLogger.LogLevel.INFO);
   }
 }
