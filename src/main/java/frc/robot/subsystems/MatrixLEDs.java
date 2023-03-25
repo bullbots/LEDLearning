@@ -1,8 +1,5 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.numbers.N16;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -10,10 +7,6 @@ import frc.robot.utility.BullLogger;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
-
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class MatrixLEDs extends SubsystemBase {
   private final AddressableLED led;
