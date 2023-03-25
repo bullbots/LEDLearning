@@ -28,10 +28,10 @@ public class Robot extends TimedRobot {
       SmartDashboard.putData("Enable LEDs", new EnableLEDs(m_LEDSystem, 0));
       SmartDashboard.putData("Flash LEDs", new Flash(m_LEDSystem, 0.25));
       SmartDashboard.putData("Flash Repeated LEDs", new FlashRepeatCommand(4,0.25, m_LEDSystem));
-      // SmartDashboard.putData("Run Row One", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Row One")));
-      // SmartDashboard.putData("Run Row Two", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Row Two")));
-      // SmartDashboard.putData("Run Col One", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Col One")));
-      // SmartDashboard.putData("Run Col Two", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Col Two")));
+      SmartDashboard.putData("Run Row One", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Row One")));
+      SmartDashboard.putData("Run Row Two", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Row Two")));
+      SmartDashboard.putData("Run Col One", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Col One")));
+      SmartDashboard.putData("Run Col Two", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Col Two")));
       SmartDashboard.putData("Run Eye", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Eye")));
       SmartDashboard.putData("Traffic Cone", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("cone256")));
       SmartDashboard.putData("Purple Cube", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("cube256")));

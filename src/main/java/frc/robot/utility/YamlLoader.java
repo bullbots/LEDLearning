@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import frc.robot.subsystems.MatrixLEDs;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -39,10 +40,20 @@ public class YamlLoader {
             }
         }
 
+        loadMatImages();
         loadYamlFiles();
     }
 
-    public static void putImage(String key, Mat value) {
+    private static void loadMatImages() {
+        // We need these for debugging the Matrix LEDs physical configuration.
+        images.put("Row One", MatrixLEDs.oneRow(0));
+        images.put("Row Two", MatrixLEDs.oneRow(1));
+        images.put("Col One", MatrixLEDs.oneCol(0));
+        images.put("Col Two", MatrixLEDs.oneCol(1));
+        images.put("Eye", MatrixLEDs.eye());
+    }
+
+    private static void putImage(String key, Mat value) {
         System.out.println("Info: Yaml put image: " + key);
         images.put(key, value);
     }
@@ -60,7 +71,7 @@ public class YamlLoader {
         return ret;
     }
 
-    public static List<Mat> putVideo(String key, List<Mat> value) {
+    private static List<Mat> putVideo(String key, List<Mat> value) {
         System.out.println("Info: Yaml put video: " + key);
         return videos.put(key, value);
     }
@@ -149,7 +160,7 @@ public class YamlLoader {
         }
     }
 
-    public static void loadYamlFiles() {
+    private static void loadYamlFiles() {
         Path deployPath = Filesystem.getDeployDirectory().toPath();
 
         for (String filename : filenames) {

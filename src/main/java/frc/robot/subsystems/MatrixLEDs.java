@@ -4,9 +4,12 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utility.BullLogger;
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
+
+import java.util.Arrays;
 
 public class MatrixLEDs extends SubsystemBase {
   private final AddressableLED led;
@@ -160,7 +163,11 @@ public class MatrixLEDs extends SubsystemBase {
   }
 
   public static Mat eye() {
-    return Mat.eye(numRows, numCols, CvType.CV_8UC3);
+    Mat eyeMatrix = Mat.eye(numRows, numCols, CvType.CV_8UC1);
+    Core.multiply(eyeMatrix, new Scalar(255), eyeMatrix);
+    Mat eyeMatrixBGR = new Mat();
+    Core.merge(Arrays.asList(eyeMatrix, eyeMatrix, eyeMatrix), eyeMatrixBGR);
+    return eyeMatrixBGR;
   }
 
   public void start() {
