@@ -16,6 +16,7 @@ public class MatrixLEDs extends SubsystemBase {
   private final AddressableLEDBuffer ledBuffer;
   private static final int numRows = 16;
   private static final int numCols = 16;
+  private static final double globalScale = 0.25;
 
   private BullLogger stringLogger;
   private BullLogger intLogger;
@@ -57,11 +58,14 @@ public class MatrixLEDs extends SubsystemBase {
   }
 
   public void setMat(Mat mat) {
-    for (var i = 0; i < numRows; ++i) {
-      for (var j = 0; j < numCols; ++j) {
-        double[] element = mat.get(i, j);
+    Mat scaledMat = new Mat();
+    Core.multiply(mat, new Scalar(globalScale, globalScale, globalScale), scaledMat);
 
-        var curBufIndex = ((i % 2) == 0) ? i * numCols + j : (i + 1) * numCols - 1 - j;
+    for (var i = 0; i < numCols; ++i) {
+      for (var j = 0; j < numRows; ++j) {
+        double[] element = scaledMat.get(i, j);
+
+        var curBufIndex = ((j % 2) == 0) ? j * numCols + i : (j + 1) * numCols - 1 - i;
 
         // Set the value
 //        System.out.printf("INFO: row: %d, col: %d, val: %d%n", i, j, val);
@@ -69,6 +73,10 @@ public class MatrixLEDs extends SubsystemBase {
         ledBuffer.setRGB(curBufIndex, (int) element[2], (int) element[1], (int) element[0]);
       }
     }
+  }
+
+  public static Mat off() {
+    return Mat.zeros(numRows, numRows, CvType.CV_8UC3);
   }
 
   public void oneRow(int row, int hue) {

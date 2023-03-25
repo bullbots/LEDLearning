@@ -46,6 +46,7 @@ public class YamlLoader {
 
     private static void loadMatImages() {
         // We need these for debugging the Matrix LEDs physical configuration.
+        images.put("Off", MatrixLEDs.off());
         images.put("Row One", MatrixLEDs.oneRow(0));
         images.put("Row Two", MatrixLEDs.oneRow(1));
         images.put("Col One", MatrixLEDs.oneCol(0));

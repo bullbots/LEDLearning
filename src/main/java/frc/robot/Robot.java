@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -16,18 +17,24 @@ public class Robot extends TimedRobot {
   // LED Commands
 
   MatrixLEDs m_LEDSystem;
+  private PowerDistribution pdp;
         
   DataLog m_MainLogger;
   
   @Override
   public void robotInit() {
     try {
-      m_LEDSystem = new MatrixLEDs();
+      m_LEDSystem = new MatrixLEDs(0);
+
+      pdp = new PowerDistribution();
+
+//      SmartDashboard.putData("pdp", pdp);
 
       // set up a command sequence
       SmartDashboard.putData("Enable LEDs", new EnableLEDs(m_LEDSystem, 0));
       SmartDashboard.putData("Flash LEDs", new Flash(m_LEDSystem, 0.25));
       SmartDashboard.putData("Flash Repeated LEDs", new FlashRepeatCommand(4,0.25, m_LEDSystem));
+      SmartDashboard.putData("Off", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Off")));
       SmartDashboard.putData("Run Row One", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Row One")));
       SmartDashboard.putData("Run Row Two", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Row Two")));
       SmartDashboard.putData("Run Col One", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Col One")));

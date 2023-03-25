@@ -14,7 +14,7 @@ public class RunMatrixImageCommand extends CommandBase {
     public RunMatrixImageCommand(MatrixLEDs matrixLEDs, Mat matrixImage) {
         this.matrixLEDs = matrixLEDs;
         this.matrixImage = matrixImage;
-        addRequirements(this.matrixLEDs);
+        addRequirements(matrixLEDs);
     }
 
     @Override
@@ -32,5 +32,10 @@ public class RunMatrixImageCommand extends CommandBase {
     public void end(boolean interrupted) {
         super.end(interrupted);
         matrixLEDs.stop();
+    }
+
+    @Override
+    public boolean runsWhenDisabled() {
+        return true;
     }
 }

@@ -29,7 +29,7 @@ public class RunMatrixVideoCommand extends CommandBase {
         this.matrixImages = matrixImages;
         this.robotCyclesPerFrame = robotCyclesPerFrame;
         this.runType = runType;
-        addRequirements(this.matrixLEDs);
+        addRequirements(matrixLEDs);
     }
 
     @Override
@@ -77,5 +77,10 @@ public class RunMatrixVideoCommand extends CommandBase {
     public void end(boolean interrupted) {
         super.end(interrupted);
         matrixLEDs.stop();
+    }
+
+    @Override
+    public boolean runsWhenDisabled() {
+        return true;
     }
 }
