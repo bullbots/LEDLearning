@@ -5,7 +5,6 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -23,7 +22,9 @@ public class ImagesYamlLoader extends HashMap<String, Mat> {
     private static final List<String> imagesFilenames = List.of(
             "sad-face-frown.yaml",
             "traffic-cone-512.yaml",
-            "purple-3d-cube-hi.yaml");
+            "purple-3d-cube-hi.yaml",
+            "cone256.yaml",
+            "cube256.yaml");
 
     public ImagesYamlLoader() {
         super();

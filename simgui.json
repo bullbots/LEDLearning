@@ -77,6 +77,11 @@
         "window": {
           "visible": true
         }
+      },
+      "/SmartDashboard/Traffic Cone": {
+        "window": {
+          "visible": true
+        }
       }
     }
   },

@@ -36,8 +36,8 @@ public class Robot extends TimedRobot {
       SmartDashboard.putData("Run Col One", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("Col One")));
       SmartDashboard.putData("Run Col Two", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("Col Two")));
       SmartDashboard.putData("Run Eye", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("Eye")));
-      SmartDashboard.putData("Traffic Cone", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("traffic-cone-512")));
-      SmartDashboard.putData("Purple Cube", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("purple-3d-cube-hi")));
+      SmartDashboard.putData("Traffic Cone", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("cone256")));
+      SmartDashboard.putData("Purple Cube", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("cube256")));
       SmartDashboard.putData("Pickle", new RunMatrixImageCommand(m_LEDSystem, imagesLoader.get("pickle"))); // Pickle doesn't exist so return sad face.
 
       SmartDashboard.putData("Offline Continuous",
