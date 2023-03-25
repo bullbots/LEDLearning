@@ -10,7 +10,7 @@ public class EnableLEDs extends CommandBase {
     SetLEDs m_LEDSystem;
     int m_hue;
 
-    BullLogger m_stringLogger;
+    BullLogger m_Logger;
 
     public EnableLEDs(SetLEDs aLEDSystem, int hue) {
         this.m_LEDSystem = aLEDSystem;
@@ -19,9 +19,7 @@ public class EnableLEDs extends CommandBase {
 
         try {
           // set up a string logger
-          m_stringLogger = new BullLogger("stringEnableLEDs", true, false);
-
-          m_stringLogger.setLogType(BullLogger.LogType.STRING);
+          m_Logger = new BullLogger(true, false, BullLogger.LogLevel.DEBUG);
         } catch (Exception e) {
           // TODO Auto-generated catch block
           e.printStackTrace();
@@ -38,7 +36,7 @@ public class EnableLEDs extends CommandBase {
         // Start the LEDs
         m_LEDSystem.start();
 
-        m_stringLogger.logEntry("EnableLEDs: initialize\n");
+        m_Logger.putString("EnableLEDs", "EnableLEDs: initialize\n", BullLogger.LogLevel.DEBUG);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -56,7 +54,7 @@ public class EnableLEDs extends CommandBase {
         m_LEDSystem.noColor();
         m_LEDSystem.stop();
 
-        m_stringLogger.logEntry("EnableLEDs: end\n");
+        m_Logger.putString("EnableLEDs", "EnableLEDs: end\n", BullLogger.LogLevel.DEBUG);
     }
 
   // Returns true when the command should end.

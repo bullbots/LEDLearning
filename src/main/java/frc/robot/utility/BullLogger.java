@@ -3,6 +3,8 @@ package frc.robot.utility;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.nio.file.Files;
 
 import edu.wpi.first.util.datalog.DataLog;
@@ -20,17 +22,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * entries that are at or above the level set (default is LogLevel.CRITICAL).
  *
  * Paramters
- *  String logName          Name of log; also prefix for console
  *  boolean showInConsole   Flag to also show output in system console
  *  boolean liveOutput      Flag to also send output to SmartDashboard
+ *  LogLevel level          Logging level
  * 
  * Set the log type after instantiating the logger.
- *  m_stringLogger = new BullLogger("MyLogName", true, false);
- *  m_stringLogger.setLogType(BullLogger.LogType.STRING);
- *  m_stringLogger.setLogLevel(BullLogger.LogLevel.INFO);
+ *  m_Logger = new BullLogger(true, false, BullLogger.LogLevel.DEBUG);
  *
- * Calling the logger is done by specifying the entry and optionally the log level.
- *  m_stringLogger.logEntry("log string", BullLogger.LogLevel.WARNING)
+ * Calling the logger is done by specifying the type of log, supplying the label, and optionally
+ * the log level. A different lable will log under a different log entry. 
+ *  m_Logger.putString("Log label", "log string", BullLogger.LogLevel.WARNING)
  * 
  *  In this example, if the log level is WARNING or greater, the log entry will be emitted.
  * 
@@ -41,13 +42,6 @@ public class BullLogger {
     private boolean m_ShowInConsole;
     private boolean m_liveOutput;
 
-    private StringLogEntry m_stringLog;
-    private IntegerLogEntry m_intLog;
-    private DoubleLogEntry m_doubleLog;
-
-    private String m_logName;
-
-    public static enum LogType {STRING, INT, DOUBLE}
     public static enum LogLevel {
         DEBUG(1),
         INFO(2), 
@@ -67,11 +61,16 @@ public class BullLogger {
     }
 
     private LogLevel m_LogLevel;
-    private LogType m_LogType;
 
-    public BullLogger(String logName, boolean showInConsole, boolean liveOutput) {
+    private final ConcurrentMap<String, Object> m_logEntries = new ConcurrentHashMap<>();
+
+    public BullLogger(boolean showInConsole, boolean liveOutput) {
+        // default log level is CRITICAL
+        this(showInConsole, liveOutput, LogLevel.CRITICAL);
+    }
+
+    public BullLogger(boolean showInConsole, boolean liveOutput, LogLevel level) {
         // save the logger settings
-        m_logName = logName;
         m_ShowInConsole = showInConsole;
         m_liveOutput = liveOutput;
 
@@ -90,8 +89,7 @@ public class BullLogger {
             m_dataLogger = DataLogManager.getLog();
         }
 
-        // default log level is CRITICAL
-        m_LogLevel = LogLevel.CRITICAL;
+       m_LogLevel = level;
     }
 
     private boolean loggerIsUSBDrive() {
@@ -100,11 +98,9 @@ public class BullLogger {
         try {
             logDirTest = Paths.get("/u").toRealPath();
             
-            String test2 = logDirTest.toString();
-
             return Files.isWritable(logDirTest);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            logException("Exception checking for usb path: " + e.getMessage());
         }
 
         return false;
@@ -116,29 +112,73 @@ public class BullLogger {
         DriverStation.reportWarning(exception, true);
     }
 
-    public void setLogLevel(LogLevel logLevel) {
-        this.m_LogLevel = logLevel;
-    }
+    // Allow logging of an integer.
+    public void putInteger(String label, int entry, LogLevel level) {
+        IntegerLogEntry logger = null;
 
-    public void setLogType(LogType logType) {
-        this.m_LogType = logType;
+        // if data logging, get the entry
+        if (m_dataLogger != null) {
+            logger = (IntegerLogEntry) m_logEntries.putIfAbsent(label, new IntegerLogEntry(m_dataLogger, label));
 
-        if (m_dataLogger == null) {
-            logException("***** Logger not available *****");
-        } else {
-            if (logType == LogType.STRING) {
-                // set up a string logger
-                m_stringLog = new StringLogEntry(m_dataLogger, this.m_logName);
-            } else if (logType == LogType.INT) {
-                // set up an int logger
-                m_intLog = new IntegerLogEntry(m_dataLogger, this.m_logName);
-            } else if (logType == LogType.DOUBLE) {
-                // set up an int logger
-                m_doubleLog = new DoubleLogEntry(m_dataLogger, this.m_logName);
-            } else {
-                logException("Invalid log type: " + logType);
+            if (logger == null) {
+                // get the entry just added
+                logger = (IntegerLogEntry) m_logEntries.get(label);
             }
         }
+
+        // now log it
+        logEntry(logger, label, entry, level);
+    }
+
+    // Default to Critical log level, if not specified.
+    public void putInteger(String label, int entry) {
+        this.putInteger(label, entry, LogLevel.CRITICAL);
+    }
+
+    // Allow logging of a double.
+    public void putDouble(String label, double entry, LogLevel level) {
+        DoubleLogEntry logger = null;
+
+        // if data logging, get the entry
+        if (m_dataLogger != null) {
+            logger = (DoubleLogEntry) m_logEntries.putIfAbsent(label, new DoubleLogEntry(m_dataLogger, label));
+
+            if (logger == null) {
+                // get the entry just added
+                logger = (DoubleLogEntry) m_logEntries.get(label);
+            }
+        }
+
+        // now log it
+        logEntry(logger, label, entry, level);
+    }
+
+    // Default to Critical log level, if not specified.
+    public void putDouble(String label, double entry) {
+        this.putDouble(label, entry, LogLevel.CRITICAL);
+    }
+
+    // Allow logging of a string.
+    public void putString(String label, String entry, LogLevel level) {
+        StringLogEntry logger = null;
+
+        // if data logging, get the entry
+        if (m_dataLogger != null) {
+            logger = (StringLogEntry) m_logEntries.putIfAbsent(label, new StringLogEntry(m_dataLogger, label));
+
+            if (logger == null) {
+                // get the entry just added
+                logger = (StringLogEntry) m_logEntries.get(label);
+            }
+        }
+
+        // now log it
+        logEntry(logger, label, entry, level);
+    }
+
+    // Default to Critical log level, if not specified.
+    public void putString(String label, String entry) {
+        this.putString(label, entry, LogLevel.CRITICAL);
     }
 
     private void showInConsole(String entry) {
@@ -148,119 +188,104 @@ public class BullLogger {
         }
     }
 
-    private void logToDataLogger(String entry) {
+    private void logToDataLogger(StringLogEntry logger, String entry) {
         if (m_dataLogger != null) {
-            if (m_stringLog == null) {
+            if (logger == null) {
                 System.out.println("String logger not set up\n");
                 return;
             }
 
             try {
-                m_stringLog.append(entry);
+                logger.append(entry);
             } catch (Exception e) {
-                System.out.println("Exception trying to log string: " + entry);
+                logException("Exception trying to log string '" + entry + "': " + e.getMessage());
             }
         }
     }
 
-    private void showLiveOutput(String entry) {
+    private void showLiveOutput(String label, String entry) {
         if (m_liveOutput) {
-            SmartDashboard.putString(m_logName, entry);
+            SmartDashboard.putString(label, entry);
         }
     }
 
-    public void logEntry(String entry) {
-        // default is CRITICAL level
-        this.logEntry(entry, LogLevel.CRITICAL);
-    }
-
-    public void logEntry(String entry, LogLevel level) {
+    private void logEntry(StringLogEntry logger, String label, String entry, LogLevel level) {
         // only log if at the right level
         if (level.getValue() < this.m_LogLevel.getValue()) {
             return;
         }
 
-        logToDataLogger(entry);
+        logToDataLogger(logger, entry);
 
-        showInConsole(m_logName + ": " + entry);
+        showInConsole(label + ": " + entry);
 
-        showLiveOutput(entry);
+        showLiveOutput(label, entry);
     }
 
-    private void logToDataLogger(int entry) {
+    private void logToDataLogger(IntegerLogEntry logger, int entry) {
         if (m_dataLogger != null) {
-            if (m_intLog == null) {
+            if (logger == null) {
                 System.out.println("Integer logger not set up\n");
                 return;
             }
 
             try {
-                m_intLog.append(entry);
+                logger.append(entry);
             } catch (Exception e) {
-                System.out.println("Exception trying to log int: " + entry);
+                logException("Exception trying to log int '" + entry + "': " + e.getMessage());
             }
         }
     }
 
-    private void showLiveOutput(int entry) {
+    private void showLiveOutput(String label, int entry) {
         if (m_liveOutput) {
-            SmartDashboard.putNumber(m_logName, entry);
+            SmartDashboard.putNumber(label, entry);
         }
     }
 
-    public void logEntry(int entry) {
-        // default is CRITICAL level
-        logEntry(entry, LogLevel.CRITICAL);
-    }
-
-    public void logEntry(int entry, LogLevel level) {
+    private void logEntry(IntegerLogEntry logger, String label, int entry, LogLevel level) {
         if (level.getValue() < this.m_LogLevel.getValue()) {
             return;
         }
 
-        logToDataLogger(entry);
+        logToDataLogger(logger, entry);
 
-        showInConsole(m_logName + ": " + entry);
+        showInConsole(label + ": " + entry);
 
-        showLiveOutput(entry);
+        showLiveOutput(label, entry);
     }
 
-    private void logToDataLogger(double entry) {
+    private void logToDataLogger(DoubleLogEntry logger, double entry) {
         if (m_dataLogger != null) {
-            if (m_doubleLog == null) {
+            if (logger == null) {
                 System.out.println("Double logger not set up\n");
                 return;
             }
 
             try {
-                m_doubleLog.append(entry);
+                logger.append(entry);
             } catch (Exception e) {
-                System.out.println("Exception trying to log double: " + entry);
+                logException("Exception trying to log double '" + entry + "': " + e.getMessage());
             }
         }
     }
 
-    private void showLiveOutput(double entry) {
+    private void showLiveOutput(String label, double entry) {
         if (m_liveOutput) {
-            SmartDashboard.putNumber(m_logName, entry);
+            SmartDashboard.putNumber(label, entry);
         }
     }
 
-    public void logEntry(double entry) {
-        // default is CRITICAL level
-        logEntry(entry, LogLevel.CRITICAL);
-    }
-
-    public void logEntry(double entry, LogLevel level) {
+    private void logEntry(DoubleLogEntry logger, String label, double entry, LogLevel level) {
         if (level.getValue() < this.m_LogLevel.getValue()) {
             return;
         }
 
-        logToDataLogger(entry);
+        logToDataLogger(logger, entry);
 
-        showInConsole(m_logName + ": " + entry);
+        showInConsole(label + ": " + entry);
 
-        showLiveOutput(entry);
+        showLiveOutput(label, entry);
     }
 
     public void logDriverStation() {
