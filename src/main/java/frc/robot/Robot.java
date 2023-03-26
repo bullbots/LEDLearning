@@ -8,14 +8,17 @@ import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.*;
 import frc.robot.subsystems.MatrixLEDs;
 import frc.robot.utility.YamlLoader;
+import frc.robot.utility.snake.SnakeGame;
 
 public class Robot extends TimedRobot {
+  XboxController controller = new XboxController(0);
   // LED Commands
 
   MatrixLEDs m_LEDSystem;
@@ -87,12 +90,18 @@ public class Robot extends TimedRobot {
       }
     } else if (CommandScheduler.getInstance().isScheduled(offlineContinous)) {
       System.out.println("Info: scheduling Off");
-      new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Off")) {
-        @Override
-        public boolean isFinished() {
-          return true;
-        }
-      }.schedule();
+      // new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Off")) {
+      //   @Override
+      //   public boolean isFinished() {
+      //     return true;
+      //   }
+      // }.schedule();
+      new RunSnake(m_LEDSystem, new SnakeGame(),
+        () -> controller.getRawAxis(0) < -.1, 
+        () -> controller.getRawAxis(0) > .1, 
+        () -> controller.getRawAxis(1) < -.1,
+        () -> controller.getRawAxis(1) > .1
+      ).schedule();
     }
   }
 }
