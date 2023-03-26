@@ -5,9 +5,11 @@
 package frc.robot;
 
 import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.*;
 import frc.robot.subsystems.MatrixLEDs;
@@ -18,13 +20,21 @@ public class Robot extends TimedRobot {
 
   MatrixLEDs m_LEDSystem;
   private PowerDistribution pdp;
+
+  private Command offlineContinous;
         
   DataLog m_MainLogger;
   
   @Override
   public void robotInit() {
     try {
-      m_LEDSystem = new MatrixLEDs(0);
+      m_LEDSystem = new MatrixLEDs(0, 2);
+
+      offlineContinous = new RunMatrixVideoCommand(m_LEDSystem,
+              YamlLoader.getVideo("offline"),
+              10,
+              RunMatrixVideoCommand.RunType.CONTINUOUS
+      );
 
       pdp = new PowerDistribution();
 
@@ -40,7 +50,7 @@ public class Robot extends TimedRobot {
       SmartDashboard.putData("Run Col One", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Col One")));
       SmartDashboard.putData("Run Col Two", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Col Two")));
       SmartDashboard.putData("Run Eye", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Eye")));
-      SmartDashboard.putData("Traffic Cone", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("cone256")));
+      SmartDashboard.putData("Traffic Cone Front", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("cone256")));
       SmartDashboard.putData("Purple Cube", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("cube256")));
       SmartDashboard.putData("Pickle", new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("pickle"))); // Pickle doesn't exist so return sad face.
 
@@ -70,5 +80,19 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    if (DriverStation.isDisabled()) {
+      if (!CommandScheduler.getInstance().isScheduled(offlineContinous)) {
+        System.out.println("Info: scheduling Offline Continuous");
+        offlineContinous.schedule();
+      }
+    } else if (CommandScheduler.getInstance().isScheduled(offlineContinous)) {
+      System.out.println("Info: scheduling Off");
+      new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Off")) {
+        @Override
+        public boolean isFinished() {
+          return true;
+        }
+      }.schedule();
+    }
   }
 }

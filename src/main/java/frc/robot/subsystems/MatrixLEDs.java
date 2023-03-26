@@ -16,7 +16,8 @@ public class MatrixLEDs extends SubsystemBase {
   private final AddressableLEDBuffer ledBuffer;
   private static final int numRows = 16;
   private static final int numCols = 16;
-  private static final double globalScale = 0.25;
+  private int numPanels = 1;
+  private static final double globalScale = 1;
 
   private BullLogger stringLogger;
   private BullLogger intLogger;
@@ -24,18 +25,19 @@ public class MatrixLEDs extends SubsystemBase {
   // for rainbow pattern, store what the last hue of the first pixel is
   private int rainbowFirstPixelHue;
 
-  public MatrixLEDs() {
-    this(9); // Default PWM port 9
+  public MatrixLEDs(int numPanels) {
+    this(9, numPanels); // Default PWM port 9
   }
 
-  public MatrixLEDs(int port) {
+  public MatrixLEDs(int port, int numPanels) {
+    this.numPanels = numPanels;
     // This should only be called once because of the port conflict issue
     led = new AddressableLED(port); // PWM port 9
 
     // Reuse buffer
     // Default to a length of 20, start empty output
     // Length is expensive to set, so only set it once, then just update data
-    ledBuffer = new AddressableLEDBuffer(numRows * numCols);
+    ledBuffer = new AddressableLEDBuffer(numRows * numCols * numPanels);
     led.setLength(ledBuffer.getLength());
 
     try {
@@ -61,16 +63,19 @@ public class MatrixLEDs extends SubsystemBase {
     Mat scaledMat = new Mat();
     Core.multiply(mat, new Scalar(globalScale, globalScale, globalScale), scaledMat);
 
-    for (var i = 0; i < numCols; ++i) {
-      for (var j = 0; j < numRows; ++j) {
-        double[] element = scaledMat.get(i, j);
+    for (var curPanelIdx = 0; curPanelIdx < numPanels; curPanelIdx++) {
+      for (var i = 0; i < numCols; ++i) {
+        for (var j = 0; j < numRows; ++j) {
+          double[] element = scaledMat.get(i, j);
 
-        var curBufIndex = ((j % 2) == 0) ? j * numCols + i : (j + 1) * numCols - 1 - i;
+          var curBufIndex = ((j % 2) == 0) ? j * numCols + i : (j + 1) * numCols - 1 - i;
+          curBufIndex += curPanelIdx * numCols * numRows;
 
-        // Set the value
+          // Set the value
 //        System.out.printf("INFO: row: %d, col: %d, val: %d%n", i, j, val);
 
-        ledBuffer.setRGB(curBufIndex, (int) element[2], (int) element[1], (int) element[0]);
+          ledBuffer.setRGB(curBufIndex, (int) element[2], (int) element[1], (int) element[0]);
+        }
       }
     }
   }
