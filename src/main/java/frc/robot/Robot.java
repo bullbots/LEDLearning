@@ -81,6 +81,22 @@ public class Robot extends TimedRobot {
   }
 
   @Override
+  public void testInit() {
+    CommandScheduler.getInstance().enable();
+    new RunSnake(m_LEDSystem, new SnakeGame(),
+            () -> controller.getRawAxis(0) < -.1,
+            () -> controller.getRawAxis(0) > .1,
+            () -> controller.getRawAxis(1) < -.1,
+            () -> controller.getRawAxis(1) > .1
+    ).schedule();
+  }
+
+  @Override
+  public void testPeriodic() {
+    CommandScheduler.getInstance().run();
+  }
+
+  @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     if (DriverStation.isDisabled()) {
@@ -90,18 +106,12 @@ public class Robot extends TimedRobot {
       }
     } else if (CommandScheduler.getInstance().isScheduled(offlineContinous)) {
       System.out.println("Info: scheduling Off");
-      // new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Off")) {
-      //   @Override
-      //   public boolean isFinished() {
-      //     return true;
-      //   }
-      // }.schedule();
-      new RunSnake(m_LEDSystem, new SnakeGame(),
-        () -> controller.getRawAxis(0) < -.1, 
-        () -> controller.getRawAxis(0) > .1, 
-        () -> controller.getRawAxis(1) < -.1,
-        () -> controller.getRawAxis(1) > .1
-      ).schedule();
+       new RunMatrixImageCommand(m_LEDSystem, YamlLoader.getImage("Off")) {
+         @Override
+         public boolean isFinished() {
+           return true;
+         }
+       }.schedule();
     }
   }
 }

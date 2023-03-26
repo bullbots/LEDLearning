@@ -2,7 +2,8 @@
   "HALProvider": {
     "Addressable LEDs": {
       "0": {
-        "columns": 16,
+        "columns": 32,
+        "order": 1,
         "serpentine": true
       },
       "window": {
@@ -37,6 +38,7 @@
       "/SmartDashboard/Flash LEDs": "Command",
       "/SmartDashboard/Flash Repeated LEDs": "Command",
       "/SmartDashboard/LED Color": "Command",
+      "/SmartDashboard/Off": "Command",
       "/SmartDashboard/Offline": "Command",
       "/SmartDashboard/Offline Continuous": "Command",
       "/SmartDashboard/Offline Once": "Command",
@@ -50,35 +52,16 @@
       "/SmartDashboard/Run Row One": "Command",
       "/SmartDashboard/Run Row Tw0": "Command",
       "/SmartDashboard/Run Row Two": "Command",
-      "/SmartDashboard/Traffic Cone": "Command"
+      "/SmartDashboard/Traffic Cone": "Command",
+      "/SmartDashboard/Traffic Cone Front": "Command"
     },
     "windows": {
-      "/SmartDashboard/Offline Continuous": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Offline Once": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/Pickle": {
         "window": {
           "visible": true
         }
       },
-      "/SmartDashboard/Pickle Video": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/Purple Cube": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Traffic Cone": {
         "window": {
           "visible": true
         }
