@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.*;
 import frc.robot.subsystems.MatrixLEDs;
+import frc.robot.utility.TestCommandScheduler;
 import frc.robot.utility.YamlLoader;
 import frc.robot.utility.snake.SnakeGame;
 
@@ -82,18 +83,24 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
-    CommandScheduler.getInstance().enable();
-    new RunSnake(m_LEDSystem, new SnakeGame(),
+    var testCommandScheduler = TestCommandScheduler.getInstance();
+    testCommandScheduler.enable();
+    testCommandScheduler.schedule(new RunSnake(m_LEDSystem, new SnakeGame(),
             () -> controller.getRawAxis(0) < -.1,
             () -> controller.getRawAxis(0) > .1,
             () -> controller.getRawAxis(1) < -.1,
             () -> controller.getRawAxis(1) > .1
-    ).schedule();
+    ));
   }
 
   @Override
   public void testPeriodic() {
-    CommandScheduler.getInstance().run();
+    TestCommandScheduler.getInstance().run();
+  }
+
+  @Override
+  public void testExit() {
+    TestCommandScheduler.getInstance().disable();
   }
 
   @Override
