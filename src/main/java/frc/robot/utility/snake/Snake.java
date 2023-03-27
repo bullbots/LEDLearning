@@ -20,6 +20,10 @@ public class Snake {
     }
 
     public void setDirection(Direction direction) {
+        if (this.direction.getX() + direction.getX() == 0 &&
+            this.direction.getY() + direction.getY() == 0) {
+            return;
+        }
         this.direction = direction;
     }
 

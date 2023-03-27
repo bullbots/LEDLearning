@@ -35,8 +35,9 @@ public class Board {
                 matrix.put(i, j, new double[] {0,0,0});
             }
         }
-        for (Point bodyPart : snake.getBody()) {
-            matrix.put(bodyPart.x, bodyPart.y, new double[] {0,255,0});
+        for (int i = 0; i < snake.getLength()-1; i++) {
+            Point body = snake.getBody().get(i);
+            matrix.put(body.y, body.x, new double[] {Math.min(255, i*15), 255, 0});
         }
         return matrix;
     }

@@ -14,13 +14,22 @@ import java.util.Random;
 
 public class SnakeGame {
     private final Board board;
-    private final Snake snake;
+    private Snake snake;
     private Point fruit;
+    private int score;
+    private int highScore;
 
     public SnakeGame() {
         this.board = new Board();
-        this.snake = new Snake(new Point(1, 1));
+        reset();
+        highScore = 0;
+    }
+
+    public void reset() {
+        snake = new Snake(new Point(1, 1));
         this.eatFruit();
+        score = 0;
+        System.out.println("Snake High Score: " + highScore);
     }
 
     public void eatFruit() {
@@ -34,12 +43,16 @@ public class SnakeGame {
         } while (this.snake.getBody().contains(newFruit)); // Make sure the fruit is not on the snake's body
     
         this.fruit = newFruit;
+        score++;
     }
+
+    public int getScore() {return score;}
+    public int getHighScore() {return highScore;}
     
 
     public Mat getMatrix() {
         Mat mat = board.getMatrix(snake);
-        mat.put(fruit.x, fruit.y, new double[] {0,0,255});
+        mat.put(fruit.y, fruit.x, new double[] {0,0,255});
         return mat;
     }
 
@@ -47,7 +60,6 @@ public class SnakeGame {
         this.snake.move();
 
         if (this.snake.getHead().equals(this.fruit)) {
-            this.snake.grow();
             this.eatFruit();
         }
     }
@@ -57,6 +69,8 @@ public class SnakeGame {
 
         // Check if the snake's head is out of bounds
         if (!this.board.contains(head)) {
+            saveHighScore();
+            score = 0;
             return true;
         }
 
@@ -65,6 +79,8 @@ public class SnakeGame {
         if (body.size() > 1) {
             for (int i = 1; i < body.size(); i++) {
                 if (head.equals(body.get(i))) {
+                    saveHighScore();
+                    score = 0;
                     return true;
                 }
             }
@@ -83,6 +99,12 @@ public class SnakeGame {
 
     public Snake getSnake() {
         return this.snake;
+    }
+
+    private void saveHighScore() {
+        if (score > highScore) {
+            highScore = score;
+        }
     }
 }
 

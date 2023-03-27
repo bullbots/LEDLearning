@@ -86,10 +86,10 @@ public class Robot extends TimedRobot {
     var testCommandScheduler = TestCommandScheduler.getInstance();
     testCommandScheduler.enable();
     testCommandScheduler.schedule(new RunSnake(m_LEDSystem, new SnakeGame(),
-            () -> controller.getRawAxis(0) < -.1,
-            () -> controller.getRawAxis(0) > .1,
-            () -> controller.getRawAxis(1) < -.1,
-            () -> controller.getRawAxis(1) > .1
+      () -> controller.getPOV() == 0,
+      () -> controller.getPOV() == 180,
+      () -> controller.getPOV() == 270,
+      () -> controller.getPOV() == 90
     ));
   }
 

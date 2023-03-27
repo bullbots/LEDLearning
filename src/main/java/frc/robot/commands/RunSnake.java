@@ -15,6 +15,7 @@ public class RunSnake extends CommandBase {
   private final MatrixLEDs leds;
   private final SnakeGame game;
   private final BooleanSupplier up, down, left, right;
+
   public RunSnake(MatrixLEDs leds, SnakeGame game, BooleanSupplier up, BooleanSupplier down, BooleanSupplier left, BooleanSupplier right) {
     addRequirements(leds);
     this.leds = leds;
@@ -31,6 +32,8 @@ public class RunSnake extends CommandBase {
   public void initialize() {
     leds.start();
   }
+
+  int i = 0;
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -52,6 +55,10 @@ public class RunSnake extends CommandBase {
       i = 0;
     }
     i++;
+
+    if (game.hasLost()) {
+      game.reset();
+    }
   }
 
   // Called once the command ends or is interrupted.
@@ -60,10 +67,10 @@ public class RunSnake extends CommandBase {
     leds.stop();
   }
 
-  int i = 0;
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return game.hasLost();
+    // return game.hasLost();
+    return false;
   }
 }
