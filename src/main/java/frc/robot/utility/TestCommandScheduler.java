@@ -312,13 +312,7 @@ public final class TestCommandScheduler {
         m_toSchedule.clear();
         m_toCancel.clear();
 
-        // Add default commands for un-required registered subsystems.
-        for (Map.Entry<Subsystem, Command> subsystemCommand : m_subsystems.entrySet()) {
-            if (!m_requirements.containsKey(subsystemCommand.getKey())
-                    && subsystemCommand.getValue() != null) {
-                schedule(subsystemCommand.getValue());
-            }
-        }
+        // default commands have been nuked. Nothing to see here.
 
         m_watchdog.disable();
         if (m_watchdog.isExpired()) {
@@ -356,70 +350,6 @@ public final class TestCommandScheduler {
      */
     public void unregisterSubsystem(Subsystem... subsystems) {
         m_subsystems.keySet().removeAll(Set.of(subsystems));
-    }
-
-    /**
-     * Sets the default command for a subsystem. Registers that subsystem if it is not already
-     * registered. Default commands will run whenever there is no other command currently scheduled
-     * that requires the subsystem. Default commands should be written to never end (i.e. their {@link
-     * Command#isFinished()} method should return false), as they would simply be re-scheduled if they
-     * do. Default commands must also require their subsystem.
-     *
-     * @param subsystem the subsystem whose default command will be set
-     * @param defaultCommand the default command to associate with the subsystem
-     */
-    public void setDefaultCommand(Subsystem subsystem, Command defaultCommand) {
-        if (subsystem == null) {
-            DriverStation.reportWarning("Tried to set a default command for a null subsystem", true);
-            return;
-        }
-        if (defaultCommand == null) {
-            DriverStation.reportWarning("Tried to set a null default command", true);
-            return;
-        }
-
-        requireNotComposed(defaultCommand);
-
-        if (!defaultCommand.getRequirements().contains(subsystem)) {
-            throw new IllegalArgumentException("Default commands must require their subsystem!");
-        }
-
-        if (defaultCommand.getInterruptionBehavior() == InterruptionBehavior.kCancelIncoming) {
-            DriverStation.reportWarning(
-                    "Registering a non-interruptible default command!\n"
-                            + "This will likely prevent any other commands from requiring this subsystem.",
-                    true);
-            // Warn, but allow -- there might be a use case for this.
-        }
-
-        m_subsystems.put(subsystem, defaultCommand);
-    }
-
-    /**
-     * Removes the default command for a subsystem. The current default command will run until another
-     * command is scheduled that requires the subsystem, at which point the current default command
-     * will not be re-scheduled.
-     *
-     * @param subsystem the subsystem whose default command will be removed
-     */
-    public void removeDefaultCommand(Subsystem subsystem) {
-        if (subsystem == null) {
-            DriverStation.reportWarning("Tried to remove a default command for a null subsystem", true);
-            return;
-        }
-
-        m_subsystems.put(subsystem, null);
-    }
-
-    /**
-     * Gets the default command associated with this subsystem. Null if this subsystem has no default
-     * command associated with it.
-     *
-     * @param subsystem the subsystem to inquire about
-     * @return the default command associated with the subsystem
-     */
-    public Command getDefaultCommand(Subsystem subsystem) {
-        return m_subsystems.get(subsystem);
     }
 
     /**
